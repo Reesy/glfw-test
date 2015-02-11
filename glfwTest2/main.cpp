@@ -5,6 +5,13 @@
 // GLFW
 #include <GLFW/glfw3.h>
 
+const GLchar* vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec2 position;\n"
+    "void main()\n"
+    "{\n"
+    "gl_Position = vec4(position.x, position.y, 0.0, 1.0);\n"
+    "}\0";
+
 
 //forward declaration
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -39,6 +46,26 @@ int main(void)
     }
 
     glViewport(0, 0, 800, 600);
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+
+
+    GLfloat vertices[]= {
+        -0.5f, -0.5f,
+        -0.5f, -0.5f,
+        0.0f, 0.5f
+
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    GLuint vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+    glCompileShader(vertexShader);
+
 
     while(!glfwWindowShouldClose(window)){
         glfwPollEvents();
