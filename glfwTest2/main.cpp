@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 // GLEW
@@ -11,18 +12,16 @@ using namespace std;
 // Shaders
 const GLchar* vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 position;\n"
-    "out vec4 vertexColor;\n"
     "void main()\n"
     "{\n"
     "gl_Position = vec4(position, 1.0);\n"
-    "vertexColor = vec4(0.5f, 0.0f, 0.0f, 1.0f);\n"
     "}\0";
 const GLchar* fragmentShaderSource = "#version 330 core\n"
-    "in vec4 vertexColor;\n" //same name and same type as the output from vertex shader
     "out vec4 color;\n"
+    "uniform vec4 ourColor;\n" // to be set in openGL code
     "void main()\n"
     "{\n"
-        "color = vertexColor;\n"
+        "color = ourColor;\n"
     "}\n\0";
 
 // Function prototypes
@@ -109,8 +108,16 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw our first triangle
+        // activates shader
         glUseProgram(shaderProgram);
+
+       //update the uniform color
+       GLfloat timeValue = glfwGetTime();
+       GLfloat greenValue =(sin(timeValue) / 2) + 0.5;
+       GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+       glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+        //Draw the triangle
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
