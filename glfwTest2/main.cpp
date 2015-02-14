@@ -22,7 +22,6 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr); // Windowed
     glfwMakeContextCurrent(window);
 
@@ -80,8 +79,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // activates shader
-       ourShader.Use();
-
+        ourShader.Use();
+        GLfloat yOffset = 0.5f;
+        glUniform1f(glGetUniformLocation(ourShader.Program, "yOffset"), 1.0f);
 
         //Draw the triangle
         glBindVertexArray(VAO);
