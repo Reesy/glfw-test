@@ -5,24 +5,10 @@ using namespace std;
 // GLEW
 #define GLEW_STATIC
 #include <GL/glew.h>
+#include "Shader.h"
 
 // GLFW
 #include <GLFW/glfw3.h>
-
-// Shaders
-const GLchar* vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 position;\n"
-    "void main()\n"
-    "{\n"
-    "gl_Position = vec4(position, 1.0);\n"
-    "}\0";
-const GLchar* fragmentShaderSource = "#version 330 core\n"
-    "out vec4 color;\n"
-    "uniform vec4 ourColor;\n" // to be set in openGL code
-    "void main()\n"
-    "{\n"
-        "color = ourColor;\n"
-    "}\n\0";
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -50,32 +36,13 @@ int main()
     // Define the viewport dimensions
     glViewport(0, 0, 800, 600);
 
-    // Build and compile our shader program
-    //vertex shader
-    GLint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    //fragment shader
-    GLint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    //attach shader to shader program
-    GLint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    //clear up memory
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
+    Shader ourShader("VertexShader.vert", "FragmentShader.frag");
     // Set up our vertex data (and buffer(s)) and attribute pointers
     GLfloat vertices[] = {
-        0.5f, -0.5f, 0.0f,
-       -0.5f, -0.5f, 0.0f,
-        0.0f,  0.5f, 0.0f
+        //positions                 //colors
+        0.5f, -0.5f, 0.0f,          1.0f, 0.0f, 0.0f,
+       -0.5f, -0.5f, 0.0f,          0.0f, 1.0f, 0.0f,
+        0.0f,  0.5f, 0.0f,          0.0f, 0.0f, 1.0f
     };
 
     GLuint VBO, VAO;
@@ -89,8 +56,13 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     //position attributes
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
+
+    //color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
 
     glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
 
@@ -108,13 +80,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // activates shader
-        glUseProgram(shaderProgram);
+       ourShader.Use();
 
-       //update the uniform color
-       GLfloat timeValue = glfwGetTime();
-       GLfloat greenValue =(sin(timeValue) / 2) + 0.5;
-       GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-       glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         //Draw the triangle
         glBindVertexArray(VAO);
