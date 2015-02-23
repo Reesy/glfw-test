@@ -39,6 +39,10 @@ void SampleListener::onFrame(const Controller& controller) {
 SampleListener listener;
 Controller controller;
 
+//forward declarations
+void update();
+void render();
+
 // The MAIN function, from here we start the application and run the game loop
 int main()
 {
@@ -119,8 +123,8 @@ int main()
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
 	// Set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	// Set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -141,6 +145,7 @@ int main()
 		
 		// Render
 		// Clear the colorbuffer
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -165,7 +170,17 @@ int main()
 	return 0;
 }
 
+void render(){
 
+}
+
+
+void update(){
+
+
+
+
+}
 void leapTest(){
 
 	Frame frame = controller.frame();
@@ -178,10 +193,10 @@ void leapTest(){
 	//	std::cout << "Image" << 0 << " : " << image.width() << std::endl;
 	std::cout << image << std::endl;
 	if (image.width() > 1){
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 640, 280, 0, GL_RGB, GL_UNSIGNED_BYTE, image_buffer);
  		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
+		//glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
 	}
 
 }
