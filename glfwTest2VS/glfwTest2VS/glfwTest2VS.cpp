@@ -38,7 +38,7 @@ void SampleListener::onFrame(const Controller& controller) {
 
 SampleListener listener;
 Controller controller;
-
+float mixAmount = 0.5;
 //forward declarations
 void update();
 void render();
@@ -46,6 +46,7 @@ void render();
 // The MAIN function, from here we start the application and run the game loop
 int main()
 {
+	
 	// Init GLFW
 	glfwInit();
 	// Set all the required options for GLFW
@@ -68,12 +69,13 @@ int main()
 	
 	// Define the viewport dimensions
 	glViewport(0, 0, WIDTH, HEIGHT);
-
+	
 
 	// Build and compile our shader program
 	Shader ourShader("VertexShader.vert", "FragmentShader.frag");
 
 
+	
 	// Set up vertex data (and buffer(s)) and attribute pointers
 	GLfloat vertices[] = {
 		// Positions          // Colors                // Texture Coords
@@ -87,6 +89,9 @@ int main()
 		1, 2, 3  // Second Triangle
 	};
 	GLuint VBO, VAO, EBO;
+
+
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -179,6 +184,9 @@ int main()
 		// Activate shader
 		ourShader.Use();
 
+		GLint mixUniformLocation = glGetUniformLocation(ourShader.Program, "mixVal");
+		glUniform1f(mixUniformLocation, mixAmount);
+
 		// Draw container
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -231,8 +239,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
-
 		//arduinoTest();
 		leapTest();
+	}
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS){
+		mixAmount += 0.1;
+	}
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+		mixAmount -= 0.1;
 	}
 }
