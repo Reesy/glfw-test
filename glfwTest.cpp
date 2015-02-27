@@ -13,12 +13,30 @@
 // Other includes
 #include "Shader.h"
 
+#include <LEAP/Leap.h>
+#include <LEAP/LeapMath.h>
+
+using namespace Leap;
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
+
+class SampleListener : public Listener {
+public:
+    virtual void onConnect(const Controller&);
+    virtual void onFrame(const Controller&);
+};
+
+void SampleListener::onConnect(const Controller& controller) {
+    std::cout << "Connected" << std::endl;
+}
+
+void SampleListener::onFrame(const Controller& controller) {
+    std::cout << "Frame available" << std::endl;
+}
 
 
 float mixAmount = 0.5;
@@ -29,6 +47,7 @@ void render();
 // The MAIN function, from here we start the application and run the game loop
 int main()
 {
+    Controller controller;
 	
 	// Init GLFW
 	glfwInit();
