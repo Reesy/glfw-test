@@ -8,6 +8,34 @@
 
 #include <GL/glew.h>
 
+
+const GLchar* fShaderCode = "#version 330 core\n"
+"in vec3 ourColor;\n"
+"in vec2 TexCoord;\n"
+"out vec4 color;\n"
+"uniform sampler2D ourTexture1;\n"
+"uniform sampler2D ourTexture2;\n"
+"uniform float mixVal;\n"
+"void main()\n"
+"{\n"
+"color = mix(texture(ourTexture1, TexCoord), texture(ourTexture2, vec2(TexCoord.x, 1.0 -TexCoord.y)),mixVal);\n"
+"}\n\0";
+
+const GLchar* vShaderCode = "#version 330 core\n"
+"layout (location = 0) in vec3 position;\n"
+"layout (location = 1) in vec3 color;\n"
+"layout (location = 2) in vec2 texCoord;\n"
+"out vec3 ourColor;\n"
+"out vec2 TexCoord;\n"
+"void main()\n"
+"{\n"
+"gl_Position = vec4(position, 1.0f);\n"
+"ourColor = color;\n"
+"TexCoord = vec2(texCoord.x, texCoord.y);\n"
+"}\n\0";
+
+
+
 class Shader
 {
 public:
@@ -38,8 +66,8 @@ public:
         {
             std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
         }
-        const GLchar* vShaderCode = vertexCode.c_str();
-        const GLchar * fShaderCode = fragmentCode.c_str();
+   //     const GLchar* vShaderCode = vertexCode.c_str();
+     //   const GLchar * fShaderCode = fragmentCode.c_str();
         // 2. Compile shaders
         GLuint vertex, fragment;
         GLint success;

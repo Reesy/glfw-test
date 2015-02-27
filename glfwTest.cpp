@@ -1,20 +1,18 @@
 
-#include "stdafx.h"
+
 // GLEW
 #define GLEW_STATIC
-#include <GL/glew.h>
+#include <GL/glew.h>  
 
 // GLFW
 #include <GLFW/glfw3.h>
 
 // Other Libs
-#include <SOIL/SOIL.h>
+#include <SOIL.h>
 
 // Other includes
 #include "Shader.h"
-#include "Leap.h"
 
-using namespace Leap;
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -22,22 +20,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
-class SampleListener : public Listener {
-public:
-	virtual void onConnect(const Controller&);
-	virtual void onFrame(const Controller&);
-};
 
-void SampleListener::onConnect(const Controller& controller) {
-	std::cout << "Connected" << std::endl;
-}
-
-void SampleListener::onFrame(const Controller& controller) {
-	//std::cout << "Frame available" << std::endl;
-}
-
-SampleListener listener;
-Controller controller;
 float mixAmount = 0.5;
 //forward declarations
 void update();
@@ -50,10 +33,12 @@ int main()
 	// Init GLFW
 	glfwInit();
 	// Set all the required options for GLFW
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
@@ -62,13 +47,17 @@ int main()
 	// Set the required callback functions
 	glfwSetKeyCallback(window, key_callback);
 
-	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
+	// Set this to true so GLEW knows to use a modern approach to retrieving fsunction pointers and extensions
 	glewExperimental = GL_TRUE;
 	// Initialize GLEW to setup the OpenGL Function pointers
 	glewInit();
 	
+    
+    int windowWidth, windowHeight;
+    glfwGetFramebufferSize(window, &windowWidth, &windowHeight); // Mac specific, used for fixing normalised device co-ordiates
+    
 	// Define the viewport dimensions
-	glViewport(0, 0, WIDTH, HEIGHT);
+	glViewport(0, 0, windowWidth, windowHeight);
 	
 
 	// Build and compile our shader program
@@ -118,8 +107,7 @@ int main()
 
 	
 	
-	controller.setPolicy(Leap::Controller::POLICY_IMAGES);
-	controller.addListener(listener);
+
 
 	//const unsigned char* image_buffer = CameraImage.data();
 	
@@ -137,7 +125,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Load image, create texture and generate mipmaps
 	int width, height;
-	unsigned char* image = SOIL_load_image("container.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+	unsigned char* image = SOIL_load_image("/Users/JRees/Documents/workspace/glfwTest/container.jpg", &width, &height, 0, SOIL_LOAD_RGB);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
@@ -154,7 +142,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	image = SOIL_load_image("awesomeface.png", &width, &height, 0, SOIL_LOAD_RGB);
+	image = SOIL_load_image("/Users/JRees/Documents/workspace/glfwTest/awesomeface.png", &width, &height, 0, SOIL_LOAD_RGB);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
@@ -214,21 +202,7 @@ void update(){
 }
 void leapTest(){
 
-	Frame frame = controller.frame();
 
-	ImageList images = frame.images();
-
-	Image image = images[0];
-
-	const unsigned char* image_buffer = image.data();
-	//	std::cout << "Image" << 0 << " : " << image.width() << std::endl;
-	std::cout << image << std::endl;
-	if (image.width() > 1){
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 640, 280, 0, GL_RGB, GL_UNSIGNED_BYTE, image_buffer);
- 		glGenerateMipmap(GL_TEXTURE_2D);
-		//glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
-	}
 
 }
 
