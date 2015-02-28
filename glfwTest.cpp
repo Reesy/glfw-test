@@ -169,6 +169,10 @@ int main()
 	SOIL_free_image_data(image);
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
 	
+    glm::mat4 trans;
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+   // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+    
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -196,6 +200,10 @@ int main()
 		GLint mixUniformLocation = glGetUniformLocation(ourShader.Program, "mixVal");
 		glUniform1f(mixUniformLocation, mixAmount);
 
+        GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+        
+        
 		// Draw container
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
