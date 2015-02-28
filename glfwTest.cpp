@@ -188,13 +188,6 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
-        //continuous rotate code
-         glm::mat4 trans;
-        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans,(GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        
-        
-        
 		// Bind Texture
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
@@ -209,14 +202,35 @@ int main()
 		GLint mixUniformLocation = glGetUniformLocation(ourShader.Program, "mixVal");
 		glUniform1f(mixUniformLocation, mixAmount);
 
+        //continuous rotate code
+        glm::mat4 trans;
+        
+        
+        
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans,(GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        
         GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
         
-        
-		// Draw container
+        // Draw container
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+        
+        //reset matrix
+        trans = glm::mat4();
+        trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+        GLfloat scaleAmount = sin(glfwGetTime());
+        
+        trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+        trans = glm::rotate(trans,(GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        
+      //  GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+        
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+        
 
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
