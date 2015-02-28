@@ -12,7 +12,9 @@
 
 // Other includes
 #include "Shader.h"
-
+#include <GLM/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <LEAP/Leap.h>
 #include <LEAP/LeapMath.h>
 
@@ -235,10 +237,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		//arduinoTest();
 		leapTest();
 	}
-	if (key == GLFW_KEY_UP && action == GLFW_PRESS){
+	if (key == GLFW_KEY_COMMA && action == GLFW_PRESS){
 		mixAmount += 0.1;
 	}
-	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+	if (key == GLFW_KEY_PERIOD && action == GLFW_PRESS){
 		mixAmount -= 0.1;
 	}
 }
