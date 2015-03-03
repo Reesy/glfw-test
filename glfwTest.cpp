@@ -82,7 +82,7 @@ int main()
 	
 
 	// Build and compile our shader program
-	Shader ourShader("VertexShader.vert", "FragmentShader.frag");
+	Shader ourShader("/Users/JRees/Documents/workspace/glfwTest/VertexShader.vert", "/Users/JRees/Documents/workspace/glfwTest/FragmentShader.frag");
 
 
 	

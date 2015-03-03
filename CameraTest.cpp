@@ -83,7 +83,7 @@ int main()
     
     
     // Build and compile our shader program
-    Shader ourShader("VertexShader.vert", "FragmentShader.frag");
+  Shader ourShader("/Users/JRees/Documents/workspace/glfwTest/VertexShader.vert", "/Users/JRees/Documents/workspace/glfwTest/FragmentShader.frag");
     
     
     
@@ -165,7 +165,7 @@ int main()
     glBindVertexArray(0); // Unbind VAO
     
     
-    
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     
     //const unsigned char* image_buffer = CameraImage.data();
@@ -274,7 +274,7 @@ int main()
         {
             glm::mat4 model;
             model = glm::translate(model, cubePositions[i]);
-            GLfloat angle = 20.0f * (i * glfwGetTime());
+            GLfloat angle = 20.0f * i;
             model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             
