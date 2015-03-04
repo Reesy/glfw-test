@@ -40,6 +40,11 @@ void SampleListener::onFrame(const Controller& controller) {
     std::cout << "Frame available" << std::endl;
 }
 
+float viewX;
+float viewY;
+float viewZ;
+bool CameraMove = false;
+
 
 float mixAmount = 0.5;
 //forward declarations
@@ -64,7 +69,8 @@ int main()
     // Create a GLFWwindow object that we can use for GLFW's functions
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
     glfwMakeContextCurrent(window);
-    
+    //usedfor double buffering
+    glfwSwapInterval(1);
     // Set the required callback functions
     glfwSetKeyCallback(window, key_callback);
     
@@ -164,8 +170,8 @@ int main()
     
     glBindVertexArray(0); // Unbind VAO
     
-    
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //Uncomment out the below code for wireframe mode.
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     
     //const unsigned char* image_buffer = CameraImage.data();
@@ -210,7 +216,9 @@ int main()
     // glm::mat4 trans;
     // trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
     // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-    
+    viewX = 0.0;
+    viewY = 0.0;
+    viewZ = -3.0;
     
     
     // Game loop
@@ -240,44 +248,47 @@ int main()
         GLint mixUniformLocation = glGetUniformLocation(ourShader.Program, "mixVal");
         glUniform1f(mixUniformLocation, mixAmount);
         
-        //continuous rotate code
+        //resets matricies to identity.
         glm::mat4 trans;
-        
         glm::mat4 model;
-      //  model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-       // model = glm::rotate(model, (GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
         glm::mat4 view;
-        // Note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        
         glm::mat4 projection;
+        
         projection = glm::perspective(45.0f, (GLfloat)800 / (GLfloat)600, 0.1f, 100.0f);
         
-        
+        //Define camera uniforms for shader.
         GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
-       // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        
         GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        
         GLint projLoc = glGetUniformLocation(ourShader.Program, "projection");
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        
-        
-        
         GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+       
+        
+    
+        view = glm::translate(view, glm::vec3(viewX, viewY, viewZ));
+        
         
         // Draw container
         glBindVertexArray(VAO);
         for(GLuint i = 0; i < 10; i++)
         {
-            glm::mat4 model;
+            glm::mat4 model; //resets model matrix to identify matrix
             model = glm::translate(model, cubePositions[i]);
             GLfloat angle = 20.0f * i;
-            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        
+            if(i / 3 == 1 || i == 0){
+                model = glm::rotate(model, (GLfloat)glfwGetTime(), glm::vec3(2.0f, 0.3f, 0.5f));
+            }else if(i == 9){
+                model = glm::rotate(model, (GLfloat) 20.0, glm::vec3(2.0f, 0.3f, 0.5f));
+                model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+            }else{
+                model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+            }
             
+            //Send uniforms to shader
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+            glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         glBindVertexArray(0);
@@ -319,6 +330,32 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         //arduinoTest();
         leapTest();
     }
+    if(key == GLFW_KEY_SPACE && action == GLFW_PRESS && CameraMove == true){
+        CameraMove = false;
+    }
+    else if(key == GLFW_KEY_SPACE && action == GLFW_PRESS && CameraMove == false){
+        CameraMove = true;
+    }
+    
+    if (CameraMove == true){
+        if (key == GLFW_KEY_UP && action == GLFW_PRESS){
+            viewY -= 0.1;
+            std::cout << "The current ViewY is : " << viewY << std::endl;
+        }
+        if (key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+            viewY += 0.1;
+            std::cout << "The current ViewY is : " << viewY << std::endl;
+        }
+        if (key == GLFW_KEY_LEFT && action == GLFW_PRESS){
+            viewX += 0.1;
+           std::cout << "The current ViewX is : " << viewX << std::endl;
+        }
+        if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS){
+            viewX -= 0.1;
+            std::cout << "The current ViewX is : " << viewX << std::endl;
+        }
+    }
+    
     if (key == GLFW_KEY_COMMA && action == GLFW_PRESS){
         mixAmount += 0.1;
     }
