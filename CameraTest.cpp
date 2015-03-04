@@ -43,6 +43,10 @@ void SampleListener::onFrame(const Controller& controller) {
 float viewX;
 float viewY;
 float viewZ;
+
+float modelX;
+float modelY;
+float modelZ;
 bool CameraMove = false;
 
 
@@ -219,6 +223,9 @@ int main()
     viewX = 0.0;
     viewY = 0.0;
     viewZ = -3.0;
+    modelX = 0.0;
+    modelY = 0.0;
+    modelZ = 0.0;
     
     
     // Game loop
@@ -278,8 +285,8 @@ int main()
             if(i / 3 == 1 || i == 0){
                 model = glm::rotate(model, (GLfloat)glfwGetTime(), glm::vec3(2.0f, 0.3f, 0.5f));
             }else if(i == 9){
-                model = glm::rotate(model, (GLfloat) 20.0, glm::vec3(2.0f, 0.3f, 0.5f));
-                model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+               // model = glm::rotate(model, (GLfloat) 20.0, glm::vec3(2.0f, 0.3f, 0.5f));
+                model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
             }else{
                 model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
             }
@@ -354,6 +361,24 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             viewX -= 0.1;
             std::cout << "The current ViewX is : " << viewX << std::endl;
         }
+    }else if(CameraMove == false){
+        if (key == GLFW_KEY_UP && action == GLFW_PRESS){
+            modelY -= 0.1;
+            std::cout << "The current modelY is : " << modelY << std::endl;
+        }
+        if (key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+            modelY += 0.1;
+            std::cout << "The current modelY is : " << modelY << std::endl;
+        }
+        if (key == GLFW_KEY_LEFT && action == GLFW_PRESS){
+            modelX += 0.1;
+            std::cout << "The current modelY is : " << modelX << std::endl;
+        }
+        if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS){
+            modelX -= 0.1;
+            std::cout << "The current modelX is : " << modelX << std::endl;
+        }
+        
     }
     
     if (key == GLFW_KEY_COMMA && action == GLFW_PRESS){
