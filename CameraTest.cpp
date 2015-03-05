@@ -23,6 +23,7 @@ using namespace Leap;
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
+void leapTest();
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
@@ -37,8 +38,19 @@ void SampleListener::onConnect(const Controller& controller) {
 }
 
 void SampleListener::onFrame(const Controller& controller) {
-    std::cout << "Frame available" << std::endl;
+  //  std::cout << "Frame available" << std::endl;
 }
+
+SampleListener listener;
+Controller controller;
+InteractionBox leapBox;
+ImageList images;
+Image LeftCam;
+Image RightCam;
+Frame frame;
+//const unsigned char * image_buffer;
+GLuint left_texture;
+GLuint right_texture;
 
 float viewX;
 float viewY;
@@ -58,7 +70,9 @@ void render();
 // The MAIN function, from here we start the application and run the game loop
 int main()
 {
-    Controller controller;
+    
+    controller.setPolicy(Leap::Controller::POLICY_IMAGES);
+    controller.addListener(listener);
     
     // Init GLFW
     glfwInit();
@@ -99,18 +113,18 @@ int main()
     
     // Set up vertex data (and buffer(s)) and attribute pointers
     GLfloat vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,    1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
         
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,    1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
         
         -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
@@ -272,7 +286,7 @@ int main()
         
     
         view = glm::translate(view, glm::vec3(viewX, viewY, viewZ));
-        
+        leapTest();
         
         // Draw container
         glBindVertexArray(VAO);
@@ -290,7 +304,7 @@ int main()
             }else{
                 model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
             }
-            
+          
             //Send uniforms to shader
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -323,8 +337,22 @@ void update(){
 }
 void leapTest(){
     
+    controller.setPolicyFlags(Controller::POLICY_IMAGES);
+    
+    Frame frame = controller.frame();
+    Frame previousFrame = controller.frame(1);
+    HandList hands = frame.hands();
+    
+    Hand firstHand = hands[0];
     
     
+    Vector palmNormal = firstHand.translation(previousFrame);
+    
+    
+    modelX += palmNormal.x / 10;
+    modelY += palmNormal.y / 10;
+    modelZ += palmNormal.z / 10;
+   //  std::cout << "palm Direction: " << palmNormal << std::endl;
 }
 
 
