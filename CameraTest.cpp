@@ -59,6 +59,10 @@ float viewZ;
 float modelX;
 float modelY;
 float modelZ;
+
+float modelRotX;
+float palmAngle;
+float handRoll;
 bool CameraMove = false;
 
 
@@ -301,6 +305,7 @@ int main()
             }else if(i == 9){
                // model = glm::rotate(model, (GLfloat) 20.0, glm::vec3(2.0f, 0.3f, 0.5f));
                 model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
+                model = glm::rotate(model, (GLfloat)modelRotX, glm::vec3(0, 0, 1));
             }else{
                 model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
             }
@@ -346,12 +351,19 @@ void leapTest(){
     Hand firstHand = hands[0];
     
     
-    Vector palmNormal = firstHand.translation(previousFrame);
+    Vector palmTranslation = firstHand.translation(previousFrame);
+    Vector palmRotation = firstHand.rotationAxis(previousFrame);
+    
+    palmAngle += firstHand.rotationAngle(previousFrame);
+
+    std::cout << "The hand roll is : " << palmAngle << std::endl;
     
     
-    modelX += palmNormal.x / 10;
-    modelY += palmNormal.y / 10;
-    modelZ += palmNormal.z / 10;
+    
+    modelRotX += palmRotation.x / 10;
+    modelX += palmTranslation.x / 10;
+    modelY += palmTranslation.y / 10;
+    modelZ += palmTranslation.z / 10;
    //  std::cout << "palm Direction: " << palmNormal << std::endl;
 }
 
@@ -375,36 +387,31 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (CameraMove == true){
         if (key == GLFW_KEY_UP && action == GLFW_PRESS){
             viewY -= 0.1;
-            std::cout << "The current ViewY is : " << viewY << std::endl;
         }
         if (key == GLFW_KEY_DOWN && action == GLFW_PRESS){
             viewY += 0.1;
-            std::cout << "The current ViewY is : " << viewY << std::endl;
         }
         if (key == GLFW_KEY_LEFT && action == GLFW_PRESS){
             viewX += 0.1;
-           std::cout << "The current ViewX is : " << viewX << std::endl;
         }
         if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS){
             viewX -= 0.1;
-            std::cout << "The current ViewX is : " << viewX << std::endl;
         }
     }else if(CameraMove == false){
         if (key == GLFW_KEY_UP && action == GLFW_PRESS){
             modelY -= 0.1;
-            std::cout << "The current modelY is : " << modelY << std::endl;
+
         }
         if (key == GLFW_KEY_DOWN && action == GLFW_PRESS){
             modelY += 0.1;
-            std::cout << "The current modelY is : " << modelY << std::endl;
+
         }
         if (key == GLFW_KEY_LEFT && action == GLFW_PRESS){
             modelX += 0.1;
-            std::cout << "The current modelY is : " << modelX << std::endl;
+
         }
         if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS){
             modelX -= 0.1;
-            std::cout << "The current modelX is : " << modelX << std::endl;
         }
         
     }
