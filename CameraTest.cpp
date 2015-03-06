@@ -64,7 +64,7 @@ float modelRotX;
 float palmAngle;
 float handRoll;
 bool CameraMove = false;
-
+Leap::Matrix rotationMatrix;
 
 float mixAmount = 0.5;
 //forward declarations
@@ -305,7 +305,8 @@ int main()
             }else if(i == 9){
                // model = glm::rotate(model, (GLfloat) 20.0, glm::vec3(2.0f, 0.3f, 0.5f));
                 model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
-                model = glm::rotate(model, (GLfloat)modelRotX, glm::vec3(0, 0, 1));
+               model = glm::rotate(model, palmAngle, glm::vec3(0, 0, -1));
+               // model = (glm::mat4)rotationMatrix;
             }else{
                 model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
             }
@@ -352,15 +353,14 @@ void leapTest(){
     
     
     Vector palmTranslation = firstHand.translation(previousFrame);
-    Vector palmRotation = firstHand.rotationAxis(previousFrame);
+ 
     
-    palmAngle += firstHand.rotationAngle(previousFrame);
+    palmAngle += firstHand.rotationAngle(previousFrame, Leap::Vector::xAxis()) * 10;
 
     std::cout << "The hand roll is : " << palmAngle << std::endl;
     
+    rotationMatrix = firstHand.rotationMatrix(previousFrame);
     
-    
-    modelRotX += palmRotation.x / 10;
     modelX += palmTranslation.x / 10;
     modelY += palmTranslation.y / 10;
     modelZ += palmTranslation.z / 10;
