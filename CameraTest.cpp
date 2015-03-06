@@ -129,7 +129,7 @@ int main()
         0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
         0.5f,  0.5f,  0.5f,    1.0f, 1.0f,
         -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
         
         -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -306,6 +306,7 @@ int main()
                // model = glm::rotate(model, (GLfloat) 20.0, glm::vec3(2.0f, 0.3f, 0.5f));
                 model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
                model = glm::rotate(model, palmAngle, glm::vec3(0, 0, -1)); // This line is for semi working angular rotation.
+                model = glm::scale(model, glm::vec3(1, 2, 1));
                // model = (glm::mat4)rotationMatrix;
             }else{
                 model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
