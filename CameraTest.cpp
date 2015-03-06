@@ -305,7 +305,7 @@ int main()
             }else if(i == 9){
                // model = glm::rotate(model, (GLfloat) 20.0, glm::vec3(2.0f, 0.3f, 0.5f));
                 model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
-               model = glm::rotate(model, palmAngle, glm::vec3(0, 0, -1));
+               model = glm::rotate(model, palmAngle, glm::vec3(0, 0, -1)); // This line is for semi working angular rotation.
                // model = (glm::mat4)rotationMatrix;
             }else{
                 model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
@@ -353,12 +353,12 @@ void leapTest(){
     
     
     Vector palmTranslation = firstHand.translation(previousFrame);
- 
+    
+    
+    
     
     palmAngle += firstHand.rotationAngle(previousFrame, Leap::Vector::xAxis()) * 10;
 
-    std::cout << "The hand roll is : " << palmAngle << std::endl;
-    
     rotationMatrix = firstHand.rotationMatrix(previousFrame);
     
     modelX += palmTranslation.x / 10;
