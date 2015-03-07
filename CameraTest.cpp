@@ -59,13 +59,14 @@ float viewZ;
 float modelX;
 float modelY;
 float modelZ;
+Vector palmTranslation;
 
 float modelRotX;
 float palmAngle;
 float handRoll;
 bool CameraMove = false;
 Leap::Matrix rotationMatrix;
-
+Vector thumbTranslation;
 float mixAmount = 0.5;
 //forward declarations
 void update();
@@ -161,16 +162,13 @@ int main()
     };
 
     glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( 2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3( 1.3f, -2.0f, -2.5f),
-        glm::vec3( 1.5f,  2.0f, -2.5f),
-        glm::vec3( 1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)  
+        glm::vec3( 0.0f,  0.0f,  0.0f), //hand
+        glm::vec3(-1.0f,  0.0f, -0.25f), //thumb
+        glm::vec3(-0.5f,  0.0f, -1.0f), //index finger
+        glm::vec3( 0.0f,  0.0f, -1.0f), //middle
+        glm::vec3( 0.5f,  0.0f, -1.0f), //ring finger
+        glm::vec3( 1.0f,  0.0f, -0.80f), //pinky
+
     };
 
     
@@ -294,24 +292,29 @@ int main()
         
         // Draw container
         glBindVertexArray(VAO);
-        for(GLuint i = 0; i < 10; i++)
+        for(GLuint i = 0; i < 6; i++)
         {
             glm::mat4 model; //resets model matrix to identify matrix
             model = glm::translate(model, cubePositions[i]);
-            GLfloat angle = 20.0f * i;
-        
-            if(i / 3 == 1 || i == 0){
-                model = glm::rotate(model, (GLfloat)glfwGetTime(), glm::vec3(2.0f, 0.3f, 0.5f));
-            }else if(i == 9){
-               // model = glm::rotate(model, (GLfloat) 20.0, glm::vec3(2.0f, 0.3f, 0.5f));
+            
+            if(i == 0){
+            
                 model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
-               model = glm::rotate(model, palmAngle, glm::vec3(0, 0, -1)); // This line is for semi working angular rotation.
-                model = glm::scale(model, glm::vec3(1, 2, 1));
-               // model = (glm::mat4)rotationMatrix;
-            }else{
-                model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+                model = glm::scale(model, glm::vec3(1, 0.25, 1));
+              
+                
+            }else if(i == 1){
+                
+                model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
+                
+                model = glm::scale(model, glm::vec3(0.25, 0.25, 0.25));
             }
-          
+            else{
+                model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
+                model = glm::scale(model, glm::vec3(0.25, 0.25, 0.25));
+            
+            }
+           
             //Send uniforms to shader
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -349,23 +352,17 @@ void leapTest(){
     Frame frame = controller.frame();
     Frame previousFrame = controller.frame(1);
     HandList hands = frame.hands();
-    
+  
     Hand firstHand = hands[0];
-    
-    
-    Vector palmTranslation = firstHand.translation(previousFrame);
-    
-    
-    
-    
-    palmAngle += firstHand.rotationAngle(previousFrame, Leap::Vector::xAxis()) * 10;
 
-    rotationMatrix = firstHand.rotationMatrix(previousFrame);
+    palmTranslation = firstHand.translation(previousFrame);
+    
+    firstHand.rotationMatrix(<#const Leap::Frame &sinceFrame#>)
     
     modelX += palmTranslation.x / 10;
     modelY += palmTranslation.y / 10;
     modelZ += palmTranslation.z / 10;
-   //  std::cout << "palm Direction: " << palmNormal << std::endl;
+ 
 }
 
 
