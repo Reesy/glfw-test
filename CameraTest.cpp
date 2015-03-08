@@ -56,11 +56,19 @@ float viewX;
 float viewY;
 float viewZ;
 
+
+
+
+float pitch;
+float yaw;
+float roll;
+
+
 float modelX;
 float modelY;
 float modelZ;
 Vector palmTranslation;
-
+glm::mat4 palmRotation;
 float modelRotX;
 float palmAngle;
 float handRoll;
@@ -68,6 +76,7 @@ bool CameraMove = false;
 Leap::Matrix rotationMatrix;
 Vector thumbTranslation;
 float mixAmount = 0.5;
+Vector palmNormal;
 //forward declarations
 void update();
 void render();
@@ -300,8 +309,18 @@ int main()
             if(i == 0){
             
                 model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
+        
+               // model = glm::rotate(model, roll, palmNormal.toVector3<glm::vec3>());
+                
+             //   model = glm::rotate(model, -handRoll, glm::vec3(0, 0, 1)); // slightly works but doesn't really take position, just change.
+            
+                
+                
+                model = glm::rotate(model, pitch, glm::vec3(1, 0, 0));
+                model = glm::rotate(model, roll, glm::vec3(0, 0, 1));
+                model = glm::rotate(model, -yaw, glm::vec3(0, 1,0 ));
                 model = glm::scale(model, glm::vec3(1, 0.25, 1));
-              
+               
                 
             }else if(i == 1){
                 
@@ -356,9 +375,20 @@ void leapTest(){
     Hand firstHand = hands[0];
 
     palmTranslation = firstHand.translation(previousFrame);
+    palmRotation = firstHand.rotationMatrix(previousFrame).toMatrix4x4<glm::mat4>();
     
-    firstHand.rotationMatrix(<#const Leap::Frame &sinceFrame#>)
+   // handRoll = firstHand.rotationAngle(previousFrame);
+    handRoll += firstHand.rotationAngle(previousFrame, Vector(0, 0, 1));
     
+    palmNormal = firstHand.palmNormal();
+    
+    pitch = firstHand.direction().pitch();
+    yaw = firstHand.direction().yaw();
+    roll = firstHand.palmNormal().roll();
+    
+    std::cout << pitch << std::endl;
+    
+    //std::cout << palmNormal << std::endl;
     modelX += palmTranslation.x / 10;
     modelY += palmTranslation.y / 10;
     modelZ += palmTranslation.z / 10;
