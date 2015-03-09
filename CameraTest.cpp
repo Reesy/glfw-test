@@ -169,7 +169,7 @@ int main()
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
-
+    
     glm::vec3 cubePositions[] = {
         glm::vec3( 0.0f,  0.0f,  0.0f), //hand
         glm::vec3(-1.0f,  0.0f, -0.25f), //thumb
@@ -179,17 +179,45 @@ int main()
         glm::vec3( 1.0f,  0.0f, -0.80f), //pinky
 
     };
+    
+    GLfloat letterVerticies[] = {
+        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,    1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,    1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f
+    };
+    
+    
+    glm::vec3 letterPositions[] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+    };
 
     
-    GLuint VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    GLuint VBOs[2], VAOs[2];
+    glGenVertexArrays(2, VAOs);
+    glGenBuffers(2, VBOs);
     
-    glBindVertexArray(VAO);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //Crate-cube
+    glBindVertexArray(VAOs[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    // TexCoord attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
     
+    glBindVertexArray(0); // Unbind VAO
+ 
+    
+    //letters
+    glBindVertexArray(VAOs[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
@@ -199,14 +227,16 @@ int main()
     
     glBindVertexArray(0); // Unbind VAO
     
-    //Uncomment out the below code for wireframe mode.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     
-    //const unsigned char* image_buffer = CameraImage.data();
+    
+    
+    
+    
+    
     
     // Load and create a texture
-    GLuint texture1, texture2;
+    GLuint texture1, texture2, texture3, texture4;
     
     //texture 1
     glGenTextures(1, &texture1);
@@ -241,6 +271,40 @@ int main()
     glGenerateMipmap(GL_TEXTURE_2D);
     SOIL_free_image_data(image);
     glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
+    
+    
+    //texture 3
+    glGenTextures(1, &texture3);
+    glBindTexture(GL_TEXTURE_2D, texture3); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    // Set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    image = SOIL_load_image("/Users/JRees/Documents/workspace/glfwTest/letter-a.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
+    
+    //texture 4
+    glGenTextures(1, &texture4);
+    glBindTexture(GL_TEXTURE_2D, texture4); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    // Set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    image = SOIL_load_image("/Users/JRees/Documents/workspace/glfwTest/letter-b.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
+    
     
     // glm::mat4 trans;
     // trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
@@ -300,7 +364,7 @@ int main()
         leapTest();
         
         // Draw container
-        glBindVertexArray(VAO);
+        glBindVertexArray(VAOs[0]);
         for(GLuint i = 0; i < 6; i++)
         {
             glm::mat4 model; //resets model matrix to identify matrix
@@ -310,15 +374,11 @@ int main()
             
                 model = glm::translate(model, glm::vec3(modelX, modelY, modelZ));
         
-               // model = glm::rotate(model, roll, palmNormal.toVector3<glm::vec3>());
-                
-             //   model = glm::rotate(model, -handRoll, glm::vec3(0, 0, 1)); // slightly works but doesn't really take position, just change.
-            
-                
-                
+                model = glm::rotate(model,  -yaw, glm::vec3(0, 1, 0));
+                model = glm::rotate(model, roll , glm::vec3(0, 0, 1));
                 model = glm::rotate(model, pitch, glm::vec3(1, 0, 0));
-                model = glm::rotate(model, roll, glm::vec3(0, 0, 1));
-                model = glm::rotate(model, -yaw, glm::vec3(0, 1,0 ));
+                
+               
                 model = glm::scale(model, glm::vec3(1, 0.25, 1));
                
                 
@@ -343,6 +403,9 @@ int main()
         }
         glBindVertexArray(0);
         
+        glBindVertexArray(VAOs[1]);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
         
         // Swap the screen buffers
         glfwSwapBuffers(window);
