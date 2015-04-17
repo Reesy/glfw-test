@@ -17,6 +17,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <LEAP/Leap.h>
 #include <LEAP/LeapMath.h>
+#include <LibOVR/OVR_Version.h>
+#include <LibOVR/OVR_CAPI_0_5_0.h>
 
 using namespace Leap;
 
@@ -84,7 +86,20 @@ void render();
 // The MAIN function, from here we start the application and run the game loop
 int main()
 {
-    
+    if (ovr_Initialize(NULL))
+    {
+        ovrHmd hmd = ovrHmd_Create(0);
+        if (hmd)
+        {
+            // Get more details about the HMD.
+            ovrSizei resolution = hmd->Resolution;
+            
+            // Do something with the HMD.
+        
+            ovrHmd_Destroy(hmd);
+        }
+        ovr_Shutdown();
+    }
     controller.setPolicy(Leap::Controller::POLICY_IMAGES);
     controller.addListener(listener);
     
@@ -122,7 +137,8 @@ int main()
     
     // Build and compile our shader program
   Shader ourShader("/Users/JRees/Documents/workspace/glfwTest/VertexShader.vert", "/Users/JRees/Documents/workspace/glfwTest/FragmentShader.frag");
-    
+  
+  Shader ourShader2("/Users/JRees/Documents/workspace/glfwTest/VertexShader.vert", "/Users/JRees/Documents/workspace/glfwTest/FragmentShader.frag");
     
     
     // Set up vertex data (and buffer(s)) and attribute pointers
@@ -191,7 +207,7 @@ int main()
     
     
     glm::vec3 letterPositions[] = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, -2.0f),
         glm::vec3(1.0f, 1.0f, 1.0f),
     };
 
@@ -217,7 +233,7 @@ int main()
     //letters
     glBindVertexArray(VAOs[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(letterVerticies), letterVerticies, GL_STATIC_DRAW);
     // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
@@ -338,11 +354,17 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
         glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);
+   
+        
         // Activate shader
         ourShader.Use();
-        
+       
         GLint mixUniformLocation = glGetUniformLocation(ourShader.Program, "mixVal");
         glUniform1f(mixUniformLocation, mixAmount);
+
+        
+        
+        
         
         //resets matricies to identity.
         glm::mat4 trans;
@@ -358,7 +380,7 @@ int main()
         GLint projLoc = glGetUniformLocation(ourShader.Program, "projection");
         GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
        
-        
+ 
     
         view = glm::translate(view, glm::vec3(viewX, viewY, viewZ));
         leapTest();
@@ -403,9 +425,44 @@ int main()
         }
         glBindVertexArray(0);
         
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture3);
+        glUniform1i(glGetUniformLocation(ourShader2.Program, "ourTexture1"), 0);
+        
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, texture4);
+        glUniform1i(glGetUniformLocation(ourShader2.Program, "ourTexture2"), 1);
+        
+        GLint modelLoc2 = glGetUniformLocation(ourShader2.Program, "model");
+        GLint viewLoc2 = glGetUniformLocation(ourShader2.Program, "view");
+        GLint projLoc2 = glGetUniformLocation(ourShader2.Program, "projection");
+        GLuint transformLoc2 = glGetUniformLocation(ourShader2.Program, "transform");
+        
+        ourShader2.Use();
+        
+        
+        GLint mixUniformLocation2 = glGetUniformLocation(ourShader2.Program, "mixVal");
+        glUniform1f(mixUniformLocation2, mixAmount);
+        
+        
         glBindVertexArray(VAOs[1]);
+       //     glm::mat4 model; //resets model matrix tsro identify matrix
+                model = glm::translate(model, letterPositions[0]);
+        
+
+        
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        
+        
         glBindVertexArray(0);
+        
+        
+        glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc2, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(transformLoc2, 1, GL_FALSE, glm::value_ptr(trans));
+        
         
         // Swap the screen buffers
         glfwSwapBuffers(window);
